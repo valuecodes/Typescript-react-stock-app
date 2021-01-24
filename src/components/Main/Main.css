@@ -1,11 +1,41 @@
+.main{
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 2rem;
+    align-items: flex-start;
+    padding: 0 1rem;
+}
+
 .stockInputs{
     width: 20rem;
     display: grid;
     grid-gap: 1rem;
+    padding: 1rem;
 }
 
 .stockInputsSmall{
     margin-top: 1rem;
-    display: flex;
-    padding: 0.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stockPriceSimulatorChart{
+    height: 30rem;
+    padding: 1rem;
+}
+
+.sliderInput{
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-column-gap: 2rem;
+    align-items: center;
+}
+
+.sliderInput p{
+    grid-column: 1/3;
+}
+.sliderInput label{
+    font-size: 2rem;
 }
