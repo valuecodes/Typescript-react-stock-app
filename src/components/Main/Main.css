@@ -1,0 +1,11 @@
+.stockInputs{
+    width: 20rem;
+    display: grid;
+    grid-gap: 1rem;
+}
+
+.stockInputsSmall{
+    margin-top: 1rem;
+    display: flex;
+    padding: 0.5rem;
+}
