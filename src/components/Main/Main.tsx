@@ -1,10 +1,12 @@
 import React,{useState,useEffect} from 'react'
-import { Card, TextField } from '@material-ui/core'
+import { Button, Card, TextField } from '@material-ui/core'
 import './Main.css'
 import { Line } from 'react-chartjs-2';
 import Slider from '@material-ui/core/Slider';
+import chartOptions from '../../utils/chartOptions';
 
 interface StockInputs{
+    text: string,
     stockPrice: number|null,
     eps: number|null,
     dividend: number|null,
@@ -22,10 +24,11 @@ const currentYear:number = new Date().getFullYear()
 const Main:React.FC = () => {
 
     const [stockInputs,setStockInputs] = useState<StockInputs>({
-        stockPrice:165,
-        eps:8.5,
-        dividend:4.5,
-        growthRate:5,
+        text:'KAMUX',
+        stockPrice:13.4,
+        eps:0.57,
+        dividend:0.23,
+        growthRate:10,
         normalizedPE:15
     })
 
@@ -36,64 +39,31 @@ const Main:React.FC = () => {
 
     const [chart,setChart] = useState({
         data:{},
-        options:{
-            responsive:true,
-            maintainAspectRatio: false,
-            plugins: {
-                datalabels: {
-                    display:false
-                }
-            },
-            scales: {
-                yAxes: [{
-                    id: 'stockPrice',
-                    type: 'linear',
-                    position: 'left',
-                    ticks: {
-                        beginAtZero: true,
-                    },
-
-                }, {
-                    id: 'stockEps',
-                    type: 'linear',
-                    position: 'right',
-                    ticks: {
-                        display:false,
-                        beginAtZero: true,
-                        // max:stockInputs.stockPrice*2
-                    },
-                    gridLines: {
-                        display:false,
-                        
-                    }   
-                }],
-            },
-            legend: {
-                labels: {
-                    filter: function(item:any) {
-                        return ['Stock Price Estimate','Intrinsic Value Estimate','EPS estimate','Dividend Estimate'].includes(item.text)
-                    }
-                },
-                color:'white'
-            }
-        },
+        options:chartOptions
     })
 
     useEffect(() => {
-        if(stockInputs.stockPrice && stockInputs.eps && stockInputs.dividend){
+        if(
+            stockInputs.stockPrice && 
+            stockInputs.eps && 
+            stockInputs.dividend
+        ){
             const pe:number = +(stockInputs.stockPrice / stockInputs.eps).toFixed(1) 
             const divYield:number = +((stockInputs.dividend / stockInputs.stockPrice)*100).toFixed(1) 
             setStockOutputs({...stockOutputs, pe, divYield})
         }
     }, [stockInputs])
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
-        let { name, value } = e.target
-        setStockInputs({...stockInputs, [name]:value})
-    }
+
 
     useEffect(() => {
-        if(stockInputs.stockPrice && stockInputs.eps && stockInputs.dividend && stockInputs.growthRate&& stockInputs.normalizedPE){
+        if(
+            stockInputs.stockPrice && 
+            stockInputs.eps && 
+            stockInputs.dividend && 
+            stockInputs.growthRate && 
+            stockInputs.normalizedPE
+        ){
             
             const priceArray:Array<number> = []
             const labelArray:Array<number> = []
@@ -107,7 +77,7 @@ const Main:React.FC = () => {
             let currentEps:number = stockInputs.eps
             let growthPercent:number = (stockInputs.growthRate/100)+1
             let currentDividend:number = stockInputs.dividend
-            let peVariance = stockInputs.normalizedPE - currentPE 
+            let peVariance:number = stockInputs.normalizedPE - currentPE 
             let endPrice:number = 0
             let totalDivs:number = 0
             let divYield:number = +((stockInputs.dividend / stockInputs.stockPrice)*100).toFixed(1)
@@ -125,10 +95,9 @@ const Main:React.FC = () => {
                 dividendArray.push(newPrice+totalDivs)
                 totalDivs+=newDividend
                 nullArray.push(0)
-
             }
 
-            let annualReturn = +((((endPrice/stockInputs.stockPrice)**(1/10))-1)*100).toFixed(1)
+            let annualReturn:number = +((((endPrice/stockInputs.stockPrice)**(1/10))-1)*100).toFixed(1)
 
             let newChart={
                 ...chart,
@@ -263,32 +232,45 @@ const Main:React.FC = () => {
                     ]
                 }
             }
-            console.log(newChart)
-
-            const newDataset = {
-                    label: 'Current Stock Price',
-                    data:[priceArray],
-                    backgroundColor:'#4DA5EE',
-                    borderColor:'#4DA5EE',
-                    pointRadius:8,
-                    // yAxisID:'stockPrice',
-            }
-
-            // newChart.data.datasets.push(newDataset)
             setChart(newChart)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[stockInputs])
 
-    const sliderChangeHandler = (value:number,name:string) => {
-        console.log(value)
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void =>{
+        let { name, value } = e.target
+        setStockInputs({...stockInputs, [name]:value})
+    }
+    
+    const sliderChangeHandler = (value:number,name:string): void => {
         setStockInputs({...stockInputs,[name]:value})
+    }
+
+    const resetInputsHandler = (): void  => {
+        setStockInputs({
+            text:'Enter Values...',
+            stockPrice:null,
+            eps:null,
+            dividend:null,
+            growthRate:5,
+            normalizedPE:15
+        })
+        setChart({...chart,data:{}})
+        setStockOutputs({
+            pe:0,
+            divYield:0
+        })
     }
 
     return (
         <div className='main'>
-
             <Card className='stockInputs'>
+                <div className='stockInputHeader'>
+                    <h2>{stockInputs.text}</h2>
+                    <Button variant="outlined" color="secondary" size='small' onClick={resetInputsHandler}>
+                        Reset
+                    </Button>
+                </div>
                 <TextField 
                     name='stockPrice' 
                     value={stockInputs.stockPrice||''} 
@@ -338,7 +320,7 @@ const Main:React.FC = () => {
                     />                    
                 </div>
                 <div className='sliderInput'>
-                    <p>Growth Rate</p>
+                    <p>Annual Earnings Growth Rate</p>
                     <Slider
                         value={stockInputs.growthRate||0} 
                         aria-labelledby="discrete-slider"
@@ -367,7 +349,6 @@ const Main:React.FC = () => {
                 <Line data={chart.data} options={chart.options} />
             </Card>
         </div>
-
     )
 }
 

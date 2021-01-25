@@ -39,3 +39,8 @@
 .sliderInput label{
     font-size: 2rem;
 }
+
+.stockInputHeader{
+    display: flex;
+    justify-content: space-between;
+}
