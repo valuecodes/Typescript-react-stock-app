@@ -4,6 +4,7 @@ import './Main.css'
 import { Line } from 'react-chartjs-2';
 import Slider from '@material-ui/core/Slider';
 import chartOptions from '../../utils/chartOptions';
+import NumberInput from './NumberInput';
 
 interface StockInputs{
     text: string,
@@ -271,53 +272,34 @@ const Main:React.FC = () => {
                         Reset
                     </Button>
                 </div>
-                <TextField 
-                    name='stockPrice' 
-                    value={stockInputs.stockPrice||''} 
+                <NumberInput
+                    name={'stockPrice'}
+                    value={stockInputs.stockPrice}
                     onChange={handleInputChange} 
-                    type="number" 
-                    id="standard-basic" 
-                    label="Stock Price" 
                 />
-                <TextField 
-                    name='eps' 
-                    value={stockInputs.eps||''} 
+                <NumberInput
+                    name={'eps'}
+                    value={stockInputs.eps}
                     onChange={handleInputChange} 
-                    type="number" 
-                    id="standard-basic" 
-                    label="EPS"              
                 />
-                <TextField 
-                    name='dividend' 
-                    value={stockInputs.dividend||''} 
+                <NumberInput
+                    name={'dividend'}
+                    value={stockInputs.dividend}
                     onChange={handleInputChange} 
-                    type="number" 
-                    id="standard-basic" 
-                    label="Dividend"              
                 />
                 <div className='stockInputsSmall'>
-                    <TextField 
-                        name='eps' 
-                        value={stockOutputs.pe||''} 
+                    <NumberInput
+                        name={'pe'}
+                        value={stockOutputs.pe}
                         onChange={handleInputChange} 
-                        type="number" 
-                        id="standard-basic" 
-                        label="Price To Earnings"  
-                        InputProps={{
-                            readOnly: true,
-                        }}            
-                    />                    
-                    <TextField 
-                        name='dividendYield' 
-                        value={stockOutputs.divYield||''} 
+                        readOnly={true}
+                    />
+                    <NumberInput
+                        name={'dividendYield'}
+                        value={stockOutputs.divYield}
                         onChange={handleInputChange} 
-                        type="number" 
-                        id="standard-basic" 
-                        label="Dividend Yield %"  
-                        InputProps={{
-                            readOnly: true,
-                        }}            
-                    />                    
+                        readOnly={true}
+                    />                  
                 </div>
                 <div className='sliderInput'>
                     <p>Annual Earnings Growth Rate</p>
