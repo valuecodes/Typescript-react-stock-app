@@ -1,11 +1,12 @@
 import React,{useState,useEffect} from 'react'
-import { Button, Card, TextField } from '@material-ui/core'
+import { Card } from '@material-ui/core'
 import './Main.css'
 import { Line } from 'react-chartjs-2';
 import Slider from '@material-ui/core/Slider';
 import chartOptions from '../../utils/chartOptions';
-import NumberInput from './NumberInput';
-import { calculateDivYield, calculatePE } from '../../utils/calculations';
+import NumberInput from '../Other/NumberInput';
+import { calculateDivYield, calculatePE, annualReturn } from '../../utils/calculations';
+import ResetButton from '../Other/ResetButton';
 
 interface StockInputs{
     text: string,
@@ -75,18 +76,18 @@ const Main:React.FC = () => {
             const annualReturnArray:Array<number|null> = []
             const dividendReturnArray:Array<number|null> = []
 
-            const currentPE:number = stockInputs.stockPrice / stockInputs.eps
+            const currentPE:number = calculatePE(stockInputs.stockPrice,stockInputs.eps)
             let currentEps:number = stockInputs.eps
             let growthPercent:number = (stockInputs.growthRate/100)+1
             let currentDividend:number = stockInputs.dividend
             let peVariance:number = stockInputs.normalizedPE - currentPE 
             let endPrice:number = 0
             let totalDivs:number = 0
-            let divYield:number = +((stockInputs.dividend / stockInputs.stockPrice)*100).toFixed(1)
+            let divYield:number = calculateDivYield(stockInputs.stockPrice,stockInputs.dividend)
 
             for(var i=0;i<=10;i++){
                 let newPrice:number = currentEps*(currentPE+((peVariance/10)*i))
-                let newEps:number = currentEps*=growthPercent
+                currentEps*=growthPercent
                 let newDividend:number = currentDividend*=growthPercent                
                 annualReturnArray.push(i===4?newPrice:null)
                 dividendReturnArray.push(i===3?(newPrice+totalDivs):null)
@@ -99,7 +100,7 @@ const Main:React.FC = () => {
                 nullArray.push(0)
             }
 
-            let annualReturn:number = +((((endPrice/stockInputs.stockPrice)**(1/10))-1)*100).toFixed(1)
+            let annualReturnPercent:number = annualReturn(stockInputs.stockPrice,endPrice)
 
             let newChart={
                 ...chart,
@@ -168,7 +169,7 @@ const Main:React.FC = () => {
                                 anchor : 'center',
                                 display: true,
                                 formatter: function() {
-                                    return `${annualReturn}% p.a.`;
+                                    return `${annualReturnPercent}% p.a.`;
                                 },
                                 backgroundColor: function() {
                                     return '#4DA5EE';
@@ -269,9 +270,7 @@ const Main:React.FC = () => {
             <Card className='stockInputs'>
                 <div className='stockInputHeader'>
                     <h2>{stockInputs.text}</h2>
-                    <Button variant="outlined" color="secondary" size='small' onClick={resetInputsHandler}>
-                        Reset
-                    </Button>
+                    <ResetButton reset={resetInputsHandler}/>
                 </div>
                 <NumberInput
                     name={'stockPrice'}

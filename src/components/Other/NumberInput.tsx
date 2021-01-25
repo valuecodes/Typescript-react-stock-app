@@ -1,6 +1,6 @@
 import React from 'react'
 import { TextField } from '@material-ui/core'
-import { camelCaseToString } from '../../utils/utils'
+import { camelCaseToString } from '../../utils/utilities'
 
 interface Props {
     name: string,
