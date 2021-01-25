@@ -5,6 +5,7 @@ import { Line } from 'react-chartjs-2';
 import Slider from '@material-ui/core/Slider';
 import chartOptions from '../../utils/chartOptions';
 import NumberInput from './NumberInput';
+import { calculateDivYield, calculatePE } from '../../utils/calculations';
 
 interface StockInputs{
     text: string,
@@ -49,8 +50,8 @@ const Main:React.FC = () => {
             stockInputs.eps && 
             stockInputs.dividend
         ){
-            const pe:number = +(stockInputs.stockPrice / stockInputs.eps).toFixed(1) 
-            const divYield:number = +((stockInputs.dividend / stockInputs.stockPrice)*100).toFixed(1) 
+            const pe:number = calculatePE(stockInputs.stockPrice,stockInputs.eps)
+            const divYield:number = calculateDivYield(stockInputs.stockPrice,stockInputs.dividend)
             setStockOutputs({...stockOutputs, pe, divYield})
         }
     }, [stockInputs])
